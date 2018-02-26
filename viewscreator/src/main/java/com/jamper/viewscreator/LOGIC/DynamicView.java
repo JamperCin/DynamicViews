@@ -9,7 +9,6 @@ import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.text.method.DigitsKeyListener;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +27,7 @@ import android.widget.TextView;
 
 import com.jamper.searchspinner.SearchingSpinner;
 import com.jamper.viewscreator.CALLBACK.CallBack;
+import com.jamper.viewscreator.CALLBACK.OnCheckBoxSelected;
 import com.jamper.viewscreator.CALLBACK.OnImageSelectedSaved;
 import com.jamper.viewscreator.CALLBACK.OnItemSelected;
 import com.jamper.viewscreator.R;
@@ -68,32 +68,13 @@ public class DynamicView {
         spinnerItem = "233";
         viewList = new ArrayList<>();
         innerViewsList = new ArrayList<>();
-        new Initialiser(mContext);
+        initialiser =  new Initialiser(mContext);
     }
 
 
-    private int getType(int type) {
-        switch (type) {
-            case 0:
-                return InputType.TYPE_CLASS_TEXT;
-            case 1:
-                return InputType.TYPE_CLASS_NUMBER;
-            case 2:
-                return InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
-            default:
-                return InputType.TYPE_CLASS_TEXT;
-        }
-
-    }
-
-
-
-    public EditText editText(String hint, int type) {
+    public EditText EditText(String hint) {
         EditText editText = new EditText(mContext);
         editText.setLayoutParams(params);
-        editText.setInputType(getType(type));
-        if (type == 1)
-            editText.setKeyListener(DigitsKeyListener.getInstance("0123456789-."));
         editText.setHint(hint);
         editText.setTag(hint);
         editText.setTextSize(14f);
@@ -106,16 +87,29 @@ public class DynamicView {
     }
 
 
+    public EditText EditText(String hint, int inputType) {
+        EditText editText = new EditText(mContext);
+        editText.setLayoutParams(params);
+        editText.setInputType(inputType);
+        editText.setHint(hint);
+        editText.setTag(hint);
+        editText.setTextSize(14f);
+        editText.setHintTextColor(mContext.getResources().getColor(R.color.transparent_black_hex_5));
+        editText.setTextColor(mContext.getResources().getColor(R.color.black_eel));
+        editText.setSingleLine(true);
+        editText.setSingleLine();
+        viewList.add(editText);
+        return editText;
+    }
 
-    public EditText textArea(String hint, int type) {
+
+    public EditText TextArea(String hint, int inputType) {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 150);
         params.setMargins(16, 16, 16, 16);
 
         EditText editText = new EditText(mContext);
         editText.setLayoutParams(params);
-        editText.setInputType(getType(type));
-        if (type == 1)
-            editText.setKeyListener(DigitsKeyListener.getInstance("0123456789-."));
+        editText.setInputType(inputType);
         editText.setHint(hint);
         editText.setTag(hint);
         editText.setTextSize(14f);
@@ -130,25 +124,27 @@ public class DynamicView {
     }
 
 
-    public EditText editText(String hint, int type, boolean enable) {
+    public EditText TextArea(String hint) {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 150);
+        params.setMargins(16, 16, 16, 16);
+
         EditText editText = new EditText(mContext);
         editText.setLayoutParams(params);
-        editText.setInputType(getType(type));
         editText.setHint(hint);
         editText.setTag(hint);
-        editText.setEnabled(enable);
         editText.setTextSize(14f);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            editText.setBackground(mContext.getResources().getDrawable(R.drawable.white_smoke_square_bg));
+        }
         editText.setHintTextColor(mContext.getResources().getColor(R.color.transparent_black_hex_5));
         editText.setTextColor(mContext.getResources().getColor(R.color.black_eel));
-        editText.setSingleLine(true);
-        editText.setSingleLine();
+
         viewList.add(editText);
         return editText;
     }
 
 
-
-    public FancyButton button(String text) {
+    public FancyButton Button(String text) {
         FancyButton button = new FancyButton(mContext);
         button.setText(text);
         button.setLayoutParams(params);
@@ -159,7 +155,6 @@ public class DynamicView {
         viewList.add(button);
         return button;
     }
-
 
 
     public View spinner(ArrayList<String> list) {
@@ -390,8 +385,7 @@ public class DynamicView {
     }
 
 
-
-    public LinearLayout phoneNumberPicker(String hint) {
+    public LinearLayout PhoneNumberPicker(String hint) {
 
         TableRow.LayoutParams p = new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 TableRow.LayoutParams.WRAP_CONTENT, 1f);
@@ -436,7 +430,7 @@ public class DynamicView {
     }
 
 
-    public ImageView imageView(int resource, final FragmentManager fragmentManager, final String tag) {
+    public ImageView ImageView(int resource, final FragmentManager fragmentManager, final String tag) {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.gravity = Gravity.CENTER_HORIZONTAL;
         params.setMargins(16, 16, 16, 16);
@@ -505,7 +499,7 @@ public class DynamicView {
     }
 
 
-    public ImageView signature(final String tag) {
+    public ImageView Signature(final String tag) {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.gravity = Gravity.CENTER_HORIZONTAL;
         params.setMargins(16, 16, 16, 16);
@@ -529,6 +523,11 @@ public class DynamicView {
         return imageView;
     }
 
+
+    /**========================================================================================================================**/
+    /**============================= Below are the required methods that other functions depend on ============================**/
+
+    /**Set the Spinner item to the String value**/
     private void getSpinnerItem(final SearchingSpinner spinner) {
         spinner.setOnItemSelectedListener(new com.jamper.searchspinner.OnItemSelected() {
             @Override
@@ -552,8 +551,6 @@ public class DynamicView {
                     String customPhone = getPhoneNumber(editText.getText().toString());
                     if (linearLayout != null)
                         linearLayout.setTag(customPhone);
-                    // if (editText != null)
-                    //     editText.setTag(customPhone);
                 }
             }
         });
@@ -574,8 +571,6 @@ public class DynamicView {
                 String customPhone = getPhoneNumber(editText.getText().toString());
                 if (linearLayout != null)
                     linearLayout.setTag(customPhone);
-                // if (editText != null)
-                //      editText.setTag(customPhone);
             }
         });
     }
@@ -598,8 +593,14 @@ public class DynamicView {
         return phone;
     }
 
+    /**=========================================================================================================================**/
 
-    public LinearLayout checkBox(ArrayList<String> list, final CallBack callBack) {
+
+    /**^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^**/
+    /**============================= Below are the extra public functions that needs to be called   ============================**/
+
+    
+    public LinearLayout checkBox(ArrayList<String> list, final OnCheckBoxSelected callBack) {
         LinearLayout linearLayout = new LinearLayout(mContext);
         linearLayout.setLayoutParams(params);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
@@ -619,13 +620,9 @@ public class DynamicView {
                 checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                        if (b) {
-                            if (callBack != null)
-                                callBack.execute(finalCheckBox.getText().toString() + "#" + b);
-                        } else {
-                            if (callBack != null)
-                                callBack.execute(finalCheckBox.getText().toString() + "#" + b);
-                        }
+                        if (callBack != null)
+                            callBack.execute(finalCheckBox.getText().toString(), b);
+
                     }
                 });
                 innerViewsList.add(checkBox);
@@ -637,13 +634,14 @@ public class DynamicView {
         return linearLayout;
     }
 
-
     public ArrayList<View> getViewList() {
         return viewList;
     }
 
-    public ArrayList<View> getInnerViewsList(){return innerViewsList;}
-
+    public ArrayList<View> getInnerViewsList() {
+        return innerViewsList;
+    }
+    /**=========================================================================================================================**/
 
 
 }
